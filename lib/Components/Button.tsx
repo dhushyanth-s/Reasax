@@ -1,20 +1,28 @@
-import { styled } from '../util/theme'
+import { styled, hexToRGB } from '../util/theme'
 import React, { ReactNode, useState } from 'react'
 import { ripple } from '../util/ripple'
 
 export default function RsButton({
   disabled = false,
-  type = 'normal',
+  type = 'default',
   onClick = () => {},
   children,
+  color = 'primary'
 }: RsButtonProps) {
   const [state, setState] = useState<'default' | 'active'>('default')
+
+  console.log((type === 'flat' || type === 'bordered' || type !== 'transparent'))
 
   return (
     <RsButtonRaw
       onMouseDown={(event) => {
         if (!disabled) {
-          ripple(event, '', type === 'flat' || 'bordered' && state === 'default')
+          ripple(
+            event,
+            (['flat', 'bordered', 'shadow'].includes(type)) && state === 'default',
+            color === 'primary' ? undefined : color,
+            type === 'transparent'
+          )
           setState('active')
         }
       }}
@@ -30,6 +38,10 @@ export default function RsButton({
       }}
       state={state}
       disabled={disabled}
+      css={{
+        $$color: color !== 'primary' ? color : '$colors$primary',
+        $$bg: color !== 'primary' ? hexToRGB(color, 0.15) : '$colors$primaryBg'
+      }}
     >
       {children}
     </RsButtonRaw>
@@ -39,14 +51,15 @@ export default function RsButton({
 export interface RsButtonProps {
   children: ReactNode
   onClick?: () => void
-  type?: 'normal' | 'flat' | 'bordered'
-  disabled?: boolean
+  type?: 'default' | 'flat' | 'bordered' | 'transparent' | 'shadow'
+  disabled?: boolean,
+  color?: 'primary' | string
 }
 
 const RsButtonRaw = styled('button', {
   padding: '8px 14px',
   border: 'none',
-  background: '$primary',
+  background: '$$color',
   color: 'white',
   borderRadius: 12,
   fontFamily: 'Lexend',
@@ -63,15 +76,15 @@ const RsButtonRaw = styled('button', {
 
   variants: {
     type: {
-      normal: {
+      default: {
         '&:hover': {
           transform: 'translateY(-3px)',
-          boxShadow: '0px 10px 20px -10px $primary',
+          boxShadow: '0px 10px 20px -10px $$color',
         },
       },
       flat: {
-        background: '$primaryBg',
-        color: '$primary',
+        background: '$$bg',
+        color: '$$color',
 
         '&:focus': {
           outline: 'none',
@@ -79,8 +92,49 @@ const RsButtonRaw = styled('button', {
       },
       bordered: {
         background: 'transparent',
-        color: '$primary',
-        boxShadow: '$primary'
+        color: '$$color',
+        boxShadow: '0 0 2px $$color',
+      },
+      transparent: {
+        background: 'transparent',
+        color: '$$color',
+        position: 'relative',
+
+        '&::after': {
+          content: '',
+          position: 'absolute',
+          background: '$$bg',
+          width: 0,
+          height: 0,
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+          transition: 'all 0.3s ease',
+        },
+
+        '&:hover': {
+          '&::after': {
+            width: '100%',
+            height: '100%',
+            borderRadius: 'inherit',
+          },
+        },
+
+        '&:active': {
+          '&::after': {
+            width: '90%',
+            height: '90%',
+          },
+        },
+      },
+      shadow: {
+        color: 'black',
+        background: 'white',
+
+        '&:hover': {
+          transform: 'translateY(-3px)',
+          boxShadow: '$raised',
+        },
       },
     },
 
@@ -91,9 +145,9 @@ const RsButtonRaw = styled('button', {
 
     disabled: {
       true: {
-        opacity: 0.3
-      }
-    }
+        opacity: 0.3,
+      },
+    },
   },
 
   compoundVariants: [
@@ -101,7 +155,7 @@ const RsButtonRaw = styled('button', {
       state: 'active',
       type: 'flat',
       css: {
-        background: '$primary',
+        background: '$$color',
         color: 'white',
         transition: 'all 0.3s ease, background 0.3s ease 0.2s',
       },
@@ -110,7 +164,30 @@ const RsButtonRaw = styled('button', {
       state: 'active',
       type: 'bordered',
       css: {
-        background: '$primary',
+        background: '$$color',
+        color: 'white',
+        transition: 'all 0.3s ease, background 0.3s ease 0.2s',
+      },
+    },
+    {
+      state: 'active',
+      type: 'transparent',
+      css: {
+        // color: 'white',
+        '&::after': {
+          width: '100%',
+          height: '100%',
+          borderRadius: 'inherit',
+        },
+      },
+    },
+    {
+      state: 'active',
+      type: 'shadow',
+      css: {
+        transform: 'translateY(-3px)',
+        boxShadow: '$raised',
+        background: '$$color',
         color: 'white',
         transition: 'all 0.3s ease, background 0.3s ease 0.2s',
       },
