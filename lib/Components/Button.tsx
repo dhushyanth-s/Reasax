@@ -29,7 +29,7 @@ export default function RsButton({
         setState('default')
       }}
       state={state}
-      disabled
+      disabled={disabled}
     >
       {children}
     </RsButtonRaw>
