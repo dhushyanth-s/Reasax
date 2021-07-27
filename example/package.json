@@ -7,7 +7,6 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "design-system": "../../design-system/",
     "react": "^17.0.0",
     "react-dom": "^17.0.0"
   },

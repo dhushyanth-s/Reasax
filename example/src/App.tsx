@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import logo from './logo.svg'
 import './App.css'
-import { ExampleButton } from "design-system";
+import { RsButton } from 'design-system'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -39,7 +39,7 @@ function App() {
           </a>
         </p>
       </header>
-      <ExampleButton />
+      <RsButton>Hello</RsButton>
     </div>
   )
 }

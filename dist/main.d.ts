@@ -1,2 +1,2 @@
-/// <reference types="react" />
-export declare function ExampleButton(): JSX.Element;
+import './main.css';
+export * from './Components';
