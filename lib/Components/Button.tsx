@@ -7,11 +7,10 @@ export default function RsButton({
   type = 'default',
   onClick = () => {},
   children,
-  color = 'primary'
-}: RsButtonProps) {
+  color = 'primary',
+  ...rest
+}: RsButtonProps & React.HTMLAttributes<HTMLButtonElement>) {
   const [state, setState] = useState<'default' | 'active'>('default')
-
-  console.log((type === 'flat' || type === 'bordered' || type !== 'transparent'))
 
   return (
     <RsButtonRaw
@@ -19,7 +18,8 @@ export default function RsButton({
         if (!disabled) {
           ripple(
             event,
-            (['flat', 'bordered', 'shadow'].includes(type)) && state === 'default',
+            ['flat', 'bordered', 'shadow', 'transparent'].includes(type) &&
+              state === 'default',
             color === 'primary' ? undefined : color,
             type === 'transparent'
           )
@@ -32,7 +32,6 @@ export default function RsButton({
         }
       }}
       type={type}
-      onFocus={() => console.log('hello there focussed button')}
       onBlur={() => {
         setState('default')
       }}
@@ -40,8 +39,9 @@ export default function RsButton({
       disabled={disabled}
       css={{
         $$color: color !== 'primary' ? color : '$colors$primary',
-        $$bg: color !== 'primary' ? hexToRGB(color, 0.15) : '$colors$primaryBg'
+        $$bg: color !== 'primary' ? hexToRGB(color, 0.15) : '$colors$primaryBg',
       }}
+      {...rest}
     >
       {children}
     </RsButtonRaw>
@@ -52,7 +52,7 @@ export interface RsButtonProps {
   children: ReactNode
   onClick?: () => void
   type?: 'default' | 'flat' | 'bordered' | 'transparent' | 'shadow'
-  disabled?: boolean,
+  disabled?: boolean
   color?: 'primary' | string
 }
 
@@ -89,11 +89,19 @@ const RsButtonRaw = styled('button', {
         '&:focus': {
           outline: 'none',
         },
+
+        '&:hover': {
+          boxShadow: '0px 0px 0px 2px $$color'
+        }
       },
       bordered: {
         background: 'transparent',
         color: '$$color',
         boxShadow: '0 0 2px $$color',
+
+        '&:hover': {
+          boxShadow: '0 0 0px 2px $$color'
+        }
       },
       transparent: {
         background: 'transparent',
@@ -173,6 +181,9 @@ const RsButtonRaw = styled('button', {
       state: 'active',
       type: 'transparent',
       css: {
+        background: '$$color',
+        color: 'white',
+        transition: 'all 0.3s ease, background 0.3s ease 0.2s',
         // color: 'white',
         '&::after': {
           width: '100%',

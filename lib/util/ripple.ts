@@ -25,7 +25,6 @@ export const ripple = (
 
   effect.className = 'rs-ripple'
   if (solid) {
-    console.log('solid boys')
     effect.style.background = primary
     effect.style.opacity = '1'
     if (color !== undefined && color !== '') {
